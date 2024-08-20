@@ -23,7 +23,7 @@ public class PositionController {
     private PositionService positionService;
 
     // Create
-    @PostMapping(consumes = {})
+    @PostMapping
     public Position savePosition(@RequestBody Position position) {
         return positionService.savePosition(position);
     }

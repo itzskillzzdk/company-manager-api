@@ -30,13 +30,15 @@ public class PositionControllerTest {
     @Autowired
     private PositionRepository positionRepository;
 
+    private Position savedPosition;
+
     @BeforeEach
     public void setUp() {
         // Clean existing data
         positionRepository.deleteAll();
 
         // Insert test data
-        positionRepository.save(new Position("CEO", "CEO Notes"));
+        savedPosition = positionRepository.save(new Position("CEO", "CEO Notes"));
         positionRepository.save(new Position("CTO", "CTO Notes"));
         positionRepository.save(new Position("HR Manager", "HR Manager Notes"));
     }
@@ -48,6 +50,27 @@ public class PositionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].title", is("CEO")))
-                .andExpect(jsonPath("$[0].notes", is("CEO Notes")));
+                .andExpect(jsonPath("$[0].notes", is("CEO Notes")))
+                .andExpect(jsonPath("$[1].title", is("CTO")))
+                .andExpect(jsonPath("$[1].notes", is("CTO Notes")));
+    }
+
+    @Test
+    public void testGetPositionByID_Found() throws Exception {
+        mockMvc.perform(get("/positions/{id}", savedPosition.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(savedPosition.getId().intValue())))
+                .andExpect(jsonPath("$.title", is(savedPosition.getTitle())))
+                .andExpect(jsonPath("$.notes", is(savedPosition.getNotes())));
+    }
+
+    @Test
+    public void testGetPositionByID_NotFound() throws Exception {
+        mockMvc.perform(get("/positions/{id}", 0L))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(""));
     }
 }

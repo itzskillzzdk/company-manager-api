@@ -5,11 +5,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "positions")
+@Table(name = "positions", uniqueConstraints = @UniqueConstraint(name = "UniqueTitle", columnNames = { "title" }))
 public class Position {
 
     // Empty constructor to let Hibernate instantiate an object using reflection
